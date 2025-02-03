@@ -3,6 +3,8 @@ package androidapp.controller;
 import java.util.List;
 import java.util.Optional;
 
+import androidapp.service.Impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +25,15 @@ import androidapp.service.UserService;
 public class UserController {
 	
 	@Autowired
-	private UserService userService;
+	private UserService userService = new UserServiceImpl();
+
+    @GetMapping("/hello")
+    public String index() {
+        return "Hello World";
+    }
 	
-    @PutMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginModel loginModel) {
+    @PostMapping("/loginn")
+    public ResponseEntity<?> login(@RequestBody LoginModel loginModel) {
     	return new ResponseEntity<>(userService.login(loginModel),HttpStatus.OK);
     }
     

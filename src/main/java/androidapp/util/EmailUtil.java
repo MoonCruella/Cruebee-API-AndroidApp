@@ -22,11 +22,12 @@ public class EmailUtil {
 		 mimeMessageHelper.setTo(email);
 		 mimeMessageHelper.setSubject("Verify OTP");
 		 String htmlContent = """
-				    <div>
-				        <p>Click the link below to verify your account:</p>
-				        <a href="http://localhost:8888/verify-account?email=%s&otp=%s" target="_blank">Click here to verify</a>
-				    </div>
-				""".formatted(email, otp);
+                <div>
+                    <p>Hello,</p>
+                    <p>Your OTP to verify your account is: <strong>%s</strong></p>
+                    <p>Thank you!</p>
+                </div>
+                """.formatted(otp);
 
 		 mimeMessageHelper.setText(htmlContent, true);
 		 javaMailSender.send(mimeMessage);

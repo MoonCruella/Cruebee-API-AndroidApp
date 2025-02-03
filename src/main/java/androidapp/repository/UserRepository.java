@@ -13,4 +13,10 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 	Optional<UserEntity> findByEmail(String email);
+
+	Optional<UserEntity>  findByUsername(String username);
+
+	UserEntity findUsersByEmail(String email);
+
+	UserEntity findUsersByUsername(String username);
 }

@@ -4,6 +4,10 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import androidapp.entity.UserEntity;
@@ -26,6 +30,14 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private EmailUtil emailUtil;
+
+	@Autowired
+	private JWTService jwtService;
+
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
 
 	@Override
@@ -36,11 +48,10 @@ public class UserServiceImpl implements UserService {
 		} catch (MessagingException e) {
 			throw new RuntimeException("Unable to send otp please try again");
 		}
-		
 		UserEntity user = new UserEntity();
 		user.setUsername(registerModel.getUsername());
 		user.setEmail(registerModel.getEmail());
-		user.setPassword(registerModel.getPassword());
+		user.setPassword(encoder.encode(registerModel.getPassword()));
 		user.setOtp(otp);
 		user.setOptGeneratedTime(LocalDateTime.now());
 		userRepository.save(user);
@@ -85,16 +96,24 @@ public class UserServiceImpl implements UserService {
 	public String login(LoginModel loginModel) {
 		UserEntity user = userRepository.findByEmail(loginModel.getEmail())
 				.orElseThrow(() -> new RuntimeException("User not found with this email: " + loginModel.getEmail()));
-		if(!loginModel.getPassword().equals(user.getPassword())) {
+		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
 			return "Password is incorrect";
 		}
 		else if(!user.isActive()) {
 			return "your account is not verified";
 		}
-		return "Login successful";
-				
-	}
 
+		//JWT : Check user => tạo token cho user
+		Authentication authentication =
+				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+		if(authentication.isAuthenticated()) {
+			return jwtService.generateToken(user.getEmail());
+		}
+		else {
+			return "Verify Fail";
+		}
+
+	}
 
 	@Override
 	public String verifyOtp(String email, String otp) {
@@ -114,7 +133,7 @@ public class UserServiceImpl implements UserService {
 		if(!password.equals(repassword)) {
 			return "Password not match!";
 		}
-		user.setPassword(password);
+		user.setPassword(encoder.encode(password));
 		userRepository.save(user);
 		return "Change password successful!";
 	}

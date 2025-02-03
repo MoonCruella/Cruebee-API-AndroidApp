@@ -1,7 +1,9 @@
 package androidapp.service;
 
+import androidapp.entity.UserEntity;
 import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
+import org.springframework.http.ResponseEntity;
 
 public interface UserService {
 	
