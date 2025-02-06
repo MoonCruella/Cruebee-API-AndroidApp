@@ -53,14 +53,14 @@ public class UserController {
     	return new ResponseEntity<>(userService.regenerateOtp(email),HttpStatus.OK);
     }
     
-    @GetMapping("/verify-otp")
-    public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp){
+    @PutMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestParam("email") String email, @RequestParam("otp") String otp){
     	return new ResponseEntity<>(userService.verifyOtp(email,otp),HttpStatus.OK);
     }
     
     @PutMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password, @RequestParam String repassword){
-    	return new ResponseEntity<>(userService.resetPassword(email,password,repassword),HttpStatus.OK);
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password){
+    	return new ResponseEntity<>(userService.resetPassword(email,password),HttpStatus.OK);
     }
     
 }
