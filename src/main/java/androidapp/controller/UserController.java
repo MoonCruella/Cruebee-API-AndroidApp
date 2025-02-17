@@ -1,5 +1,12 @@
 package androidapp.controller;
+import androidapp.entity.CategoryEntity;
+import androidapp.service.CategoryService;
 import androidapp.service.Impl.UserServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,17 +20,29 @@ import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
 import androidapp.service.UserService;
 
+import java.util.List;
+
 @RestController
 public class UserController {
 	
 	@Autowired
-	private UserService userService = new UserServiceImpl();
+	private UserService userService;
+    
+    @Autowired
+    private CategoryService categoryService;
 
+    @Operation(summary = "Test program",description = "Say Hello World",tags = "Get")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "See Hello World",content = {
+                    @Content(mediaType = "application/json",schema = @Schema(implementation = String.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Not See",content = @Content)
+    })
     @GetMapping("/hello")
     public String index() {
         return "Hello World";
     }
-	
+
     @PostMapping("/loginn")
     public ResponseEntity<?> login(@RequestBody LoginModel loginModel) {
     	return new ResponseEntity<>(userService.login(loginModel),HttpStatus.OK);
@@ -61,6 +80,11 @@ public class UserController {
     @PutMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password){
     	return new ResponseEntity<>(userService.resetPassword(email,password),HttpStatus.OK);
+    }
+    
+    @GetMapping("/categories")
+    public List<CategoryEntity> getCategories(){
+        return  categoryService.getAllCategories();
     }
     
 }

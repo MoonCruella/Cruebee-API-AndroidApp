@@ -37,7 +37,7 @@ public class JWTService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30)) // 60 * 60 = 1h. 1h * 30 = 30h. Tinh theo mili giay thi phai nhan them 1000. con khong thi 30h = 108000s/1000 = 108s = 1'48s
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30000)) // 60 * 60 = 1h. 1h * 30 = 30h. Tinh theo mili giay thi phai nhan them 1000. con khong thi 30h = 108000s/1000 = 108s = 1'48s
                 .and()
                 .signWith(getKey())
                 .compact();
