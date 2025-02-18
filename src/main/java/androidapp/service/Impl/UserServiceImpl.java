@@ -3,11 +3,13 @@ package androidapp.service.Impl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import androidapp.entity.UserEntity;
@@ -31,17 +33,28 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
-	@Autowired
-	private JWTService jwtService;
+//	@Autowired
+//	private JWTService jwtService;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+//	@Autowired
+//	private AuthenticationManager authenticationManager;
 
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+//	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
 
 	@Override
 	public String register(RegisterModel registerModel) {
+		UserEntity userEx = userRepository.findUsersByUsername(registerModel.getUsername());
+		if(userEx != null) {
+			return "Username is already in use";
+		}
+
+		// Kiểm tra nếu đã tồn tại user với email đó và đã active
+		UserEntity userE = userRepository.findUsersByEmail(registerModel.getEmail());
+		if(userE != null && userE.isActive()) {
+			return "Email existed!!!";
+		}
+
 		String otp = optUtil.generateOtp();
 		try {
 			emailUtil.sendOtpEmail(registerModel.getEmail(), otp);
@@ -51,34 +64,51 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = new UserEntity();
 		user.setUsername(registerModel.getUsername());
 		user.setEmail(registerModel.getEmail());
-		user.setPassword(encoder.encode(registerModel.getPassword()));
+//		user.setPassword(encoder.encode(registerModel.getPassword()));
 		user.setOtp(otp);
 		user.setOptGeneratedTime(LocalDateTime.now());
-		userRepository.save(user);
+
+		// Kiểm tra nếu user đã đăng ký nhưng chưa active thì chỉ update thông tin cho user đó
+		if(userE != null && !userE.isActive()){
+			updateUser(user);
+		}
+		else{
+			userRepository.save(user);
+		}
 		return "User registration successful";
 	}
 
 	@Override
 	public String verifyAccount(String email, String otp) {
-		
-		// Thiết lập thời gian để xác thực email là trong vòng 60s 
-		UserEntity user = userRepository.findByEmail(email)
-			.orElseThrow(()-> new RuntimeException("User not found with this email: " + email));
+
+		UserEntity user = userRepository.findUsersByEmail(email);
+		if(user == null) {
+			return "Email not existed!!!";
+		}
+
+		// Thiết lập thời gian để xác thực email là trong vòng 60s
 		if(user.getOtp().equals(otp) && Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
 			user.setActive(true);
 			user.setRole("USER");
 			userRepository.save(user);
 			return "OTP verified. You can login";
 		}
-		return "Please regenerate otp and try again";
+		else if(!user.getOtp().equals(otp))
+		{
+			return "Invalid OTP. Please check and try again.";
+		}
+		return "OTP has expired. Please regenerate and try again.";
 			
 	}
 
 	@Override
 	public String regenerateOtp(String email) {
-		
-		UserEntity user = userRepository.findByEmail(email)
-				.orElseThrow(()-> new RuntimeException("User not found with this email: " + email));
+
+		UserEntity user = userRepository.findUsersByEmail(email);
+		if(user == null) {
+			return "Email not existed!!!";
+		}
+
 		String otp = optUtil.generateOtp();
 		try {
 			emailUtil.sendOtpEmail(email, otp);
@@ -94,50 +124,71 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String login(LoginModel loginModel) {
-		UserEntity user = userRepository.findByEmail(loginModel.getEmail())
-				.orElseThrow(() -> new RuntimeException("User not found with this email: " + loginModel.getEmail()));
-		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
-			return "Password is incorrect";
+		JSONObject outputJsonObj = new JSONObject();
+		UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
+		if(user == null) {
+			return "Email not existed!!!";
 		}
+//		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
+//			return outputJsonObj.put("message","Password is incorrect!").toString();
+//		}
 		else if(!user.isActive()) {
-			return "your account is not verified";
+			return  outputJsonObj.put("message","Your account is not verified. Register again!").toString();
 		}
 
-		//JWT : Check user => tạo token cho user
-		Authentication authentication =
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
-		if(authentication.isAuthenticated()) {
-			return jwtService.generateToken(user.getEmail());
-		}
+//		//JWT : Check user => tạo token cho user
+//		Authentication authentication =
+//				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+//		if(authentication.isAuthenticated()) {
+//			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
+//			return outputJsonObj.toString();
+//		}
 		else {
-			return "Verify Fail";
+			return outputJsonObj.put("message","Verify Fail!").toString();
 		}
 
 	}
 
 	@Override
 	public String verifyOtp(String email, String otp) {
-		// Thiết lập thời gian để xác thực email là trong vòng 60s 
-				UserEntity user = userRepository.findByEmail(email)
-					.orElseThrow(()-> new RuntimeException("User not found with this email: " + email));
-				if(user.getOtp().equals(otp) && Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
-					return "OTP Verified. You can set new password";
-				}
-				return "Please regenerate otp and try again";
+		// Fetch user from repository based on email
+		UserEntity user = userRepository.findUsersByEmail(email);
+		if(user == null) {
+			return "Email not existed!!!";
+		}
+
+		// Check if OTP matches and if the OTP is within the valid time window (60 seconds)
+		long otpDurationInSeconds = Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds();
+		if (user.getOtp().equals(otp)) {
+			if (otpDurationInSeconds < 60) {
+				return "OTP Verified. You can set new password";
+			} else {
+				return "OTP has expired. Please regenerate and try again.";
+			}
+		} else {
+			return "Invalid OTP. Please check and try again.";
+		}
 	}
 
 	@Override
-	public String resetPassword(String email, String password, String repassword) {
-		UserEntity user = userRepository.findByEmail(email)
-				.orElseThrow(()-> new RuntimeException("User not found with this email: " + email));
-		if(!password.equals(repassword)) {
-			return "Password not match!";
+	public String resetPassword(String email, String password) {
+		UserEntity user = userRepository.findUsersByEmail(email);
+		if(user == null) {
+			return "Email not existed!!!";
 		}
-		user.setPassword(encoder.encode(password));
+//		user.setPassword(encoder.encode(password));
 		userRepository.save(user);
 		return "Change password successful!";
 	}
 
+	public void updateUser(UserEntity user) {
+		UserEntity existing = userRepository.findUsersByEmail(user.getEmail());
+		existing.setUsername(user.getUsername());
+		existing.setPassword(user.getPassword());
+		existing.setOtp(user.getOtp());
+		existing.setOptGeneratedTime(LocalDateTime.now());
+		userRepository.save(existing);
+	}
 
 	
 }

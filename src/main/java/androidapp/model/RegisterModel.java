@@ -1,8 +1,5 @@
 package androidapp.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class RegisterModel {
 	
 	private String username;
