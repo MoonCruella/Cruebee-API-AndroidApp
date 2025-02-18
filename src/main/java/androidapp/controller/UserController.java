@@ -27,9 +27,7 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
-    
-    @Autowired
-    private CategoryService categoryService;
+
 
     @Operation(summary = "Test program",description = "Say Hello World",tags = "Get")
     @ApiResponses(value = {
@@ -81,11 +79,7 @@ public class UserController {
     public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password){
     	return new ResponseEntity<>(userService.resetPassword(email,password),HttpStatus.OK);
     }
-    
-    @GetMapping("/categories")
-    public List<CategoryEntity> getCategories(){
-        return  categoryService.getAllCategories();
-    }
+
     
 }
 

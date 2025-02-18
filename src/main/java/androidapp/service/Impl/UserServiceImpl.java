@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import androidapp.entity.UserEntity;
@@ -33,13 +33,13 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
-	@Autowired
-	private JWTService jwtService;
+//	@Autowired
+//	private JWTService jwtService;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+//	@Autowired
+//	private AuthenticationManager authenticationManager;
 
-	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+//	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
 
 	@Override
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = new UserEntity();
 		user.setUsername(registerModel.getUsername());
 		user.setEmail(registerModel.getEmail());
-		user.setPassword(encoder.encode(registerModel.getPassword()));
+//		user.setPassword(encoder.encode(registerModel.getPassword()));
 		user.setOtp(otp);
 		user.setOptGeneratedTime(LocalDateTime.now());
 
@@ -129,20 +129,20 @@ public class UserServiceImpl implements UserService {
 		if(user == null) {
 			return "Email not existed!!!";
 		}
-		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
-			return outputJsonObj.put("message","Password is incorrect!").toString();
-		}
+//		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
+//			return outputJsonObj.put("message","Password is incorrect!").toString();
+//		}
 		else if(!user.isActive()) {
 			return  outputJsonObj.put("message","Your account is not verified. Register again!").toString();
 		}
 
-		//JWT : Check user => tạo token cho user
-		Authentication authentication =
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
-		if(authentication.isAuthenticated()) {
-			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
-			return outputJsonObj.toString();
-		}
+//		//JWT : Check user => tạo token cho user
+//		Authentication authentication =
+//				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+//		if(authentication.isAuthenticated()) {
+//			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
+//			return outputJsonObj.toString();
+//		}
 		else {
 			return outputJsonObj.put("message","Verify Fail!").toString();
 		}
@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
 		if(user == null) {
 			return "Email not existed!!!";
 		}
-		user.setPassword(encoder.encode(password));
+//		user.setPassword(encoder.encode(password));
 		userRepository.save(user);
 		return "Change password successful!";
 	}
