@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class ProductEntity {
     private String image;
     private int soldCount;
     private boolean active;
+    private LocalDateTime generatedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
