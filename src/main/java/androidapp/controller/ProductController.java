@@ -46,4 +46,16 @@ public class ProductController {
         return new APIResponse<>(products.getSize(),products);
     }
 
+    @GetMapping("/top-ten-sold")
+    public APIResponse<Page<ProductEntity>> getProductsTopTenSold(){
+        Page<ProductEntity> products = productService.findTopTenSold();
+        return new APIResponse<>(products.getSize(),products);
+    }
+
+    @GetMapping("/created-in-a-week/{offset}")
+    public APIResponse<Page<ProductEntity>> getProductsCreatedInAWeek(@PathVariable int offset){
+        Page<ProductEntity> products = productService.findCreatedInAWeek(offset);
+        return new APIResponse<>(products.getSize(),products);
+    }
+
 }
