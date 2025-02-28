@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +22,6 @@ public class ProductEntity {
     private String name;
     private String description;
     private int price;
-    private String image;
     private int soldCount;
     private boolean active;
     private LocalDateTime generatedTime;
@@ -31,5 +31,17 @@ public class ProductEntity {
     @JsonIgnore
     private CategoryEntity category;
 
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imageId")
+    @JsonIgnore
+    private Attachment attachment;
+    // Custom getter for attachment ID only
+    public String getAttachmentId() {
+        if (attachment != null) {
+            return attachment.getId();
+        }
+        return null; // or return -1, depending on your requirements for a missing attachment
+    }
 
 }
