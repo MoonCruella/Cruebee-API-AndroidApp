@@ -19,11 +19,22 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private String image;
     private boolean active;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ProductEntity> products;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imageId")
+    @JsonIgnore
+    private Attachment attachment;
+    // Custom getter for attachment ID only
+    public String getAttachmentId() {
+        if (attachment != null) {
+            return attachment.getId();
+        }
+        return null; // or return -1, depending on your requirements for a missing attachment
+    }
 
 }

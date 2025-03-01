@@ -34,4 +34,8 @@ public class Attachment {
     @JsonIgnore
     private ProductEntity product;
 
+    @OneToOne(mappedBy = "attachment")
+    @JsonIgnore
+    private CategoryEntity category;
+
 }
