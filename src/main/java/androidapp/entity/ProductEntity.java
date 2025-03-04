@@ -41,7 +41,7 @@ public class ProductEntity {
         if (attachment != null) {
             return attachment.getId();
         }
-        return null; // or return -1, depending on your requirements for a missing attachment
+        return null;
     }
 
 }

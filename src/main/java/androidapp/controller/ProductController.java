@@ -29,7 +29,14 @@ public class ProductController {
 
     }
 
-    @GetMapping("/{field}")
+    @GetMapping("/{categoryId}")
+    public List<ProductEntity> getProductsByCategory(@PathVariable int categoryId){
+        List<ProductEntity> products = productService.findByCategoryId(categoryId);
+        return products;
+
+    }
+
+    @GetMapping("/sort/{field}")
     public APIResponse<List<ProductEntity>> getProductsWithSorting(@PathVariable String field){
         List<ProductEntity> products = productService.findProductsWithSorting(field);
         return new APIResponse<>(products.size(),products);

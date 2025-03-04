@@ -25,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductEntity> findByCategoryId(int categoryId) {
+        return productRepository.findProductsByCategoryId(categoryId);
+    }
+
+    @Override
     public List<ProductEntity> findProductsWithSorting(String field){
         return productRepository.findAll(Sort.by(field));
     }
