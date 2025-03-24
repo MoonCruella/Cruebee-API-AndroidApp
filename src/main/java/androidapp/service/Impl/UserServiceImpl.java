@@ -54,11 +54,13 @@ public class UserServiceImpl implements UserService {
 		if(userE != null && userE.isActive()) {
 			return "Email existed!!!";
 		}
-
+		System.out.println("Le Nguyet");
 		String otp = optUtil.generateOtp();
+		System.out.println(otp);
 		try {
 			emailUtil.sendOtpEmail(registerModel.getEmail(), otp);
 		} catch (MessagingException e) {
+			System.out.println("Error ne");
 			throw new RuntimeException("Unable to send otp please try again");
 		}
 		UserEntity user = new UserEntity();
