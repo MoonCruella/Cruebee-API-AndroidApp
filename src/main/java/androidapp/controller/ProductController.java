@@ -33,7 +33,6 @@ public class ProductController {
     public List<ProductEntity> getProductsByCategory(@PathVariable int categoryId){
         List<ProductEntity> products = productService.findByCategoryId(categoryId);
         return products;
-
     }
 
     @GetMapping("/sort/{field}")
