@@ -143,6 +143,7 @@ public class UserServiceImpl implements UserService {
 //				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
 //		if(authentication.isAuthenticated()) {
 //			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
+//			outputJsonObj.put("username",user.getUsername());
 //			return outputJsonObj.toString();
 //		}
 		else {
