@@ -25,6 +25,5 @@ public class UserEntity {
 	private LocalDateTime optGeneratedTime;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JsonIgnore
 	private List<PaymentEntity> userPayments;
 }

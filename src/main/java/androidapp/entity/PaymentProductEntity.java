@@ -14,16 +14,15 @@ public class PaymentProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private int quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
     private PaymentEntity payment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private ProductEntity product;
 
-    private int quantity;
+
 }

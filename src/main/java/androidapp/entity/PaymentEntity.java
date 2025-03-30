@@ -18,9 +18,8 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private UserEntity user;
 
     private String addressUser;
@@ -34,6 +33,6 @@ public class PaymentEntity {
     private LocalDateTime receivedDate;
     private LocalDateTime orderDate;
 
-    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private List<PaymentProductEntity> products;
 }
