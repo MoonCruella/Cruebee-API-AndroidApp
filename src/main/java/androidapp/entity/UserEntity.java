@@ -1,10 +1,9 @@
 package androidapp.entity;
 import java.time.LocalDateTime;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -13,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name="users")
 public class UserEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -25,5 +24,7 @@ public class UserEntity {
 	private boolean active;
 	private LocalDateTime optGeneratedTime;
 
-
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private List<PaymentEntity> userPayments;
 }
