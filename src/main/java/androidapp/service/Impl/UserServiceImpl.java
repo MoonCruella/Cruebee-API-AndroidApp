@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -128,34 +129,24 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String login(LoginModel loginModel) {
-		if (loginModel.getEmail() == null || loginModel.getPassword() == null || loginModel.getPassword().isEmpty()) {
-			return "Email hoặc mật khẩu không được để trống";
-		}
 		JSONObject outputJsonObj = new JSONObject();
-		UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
-		if(user == null) {
-			return "Email not existed!!!";
-		}
-//		if(!encoder.matches(loginModel.getPassword(), user.getPassword())) {
-//			return outputJsonObj.put("message","Password is incorrect!").toString();
-//		}
-		else if(!user.isActive()) {
-			return  outputJsonObj.put("message","Your account is not verified. Register again!").toString();
-		}
-
 		//JWT : Check user => tạo token cho user
-		Authentication authentication =
-				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
-		if(authentication.isAuthenticated()) {
-			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
-			outputJsonObj.put("username",user.getUsername());
-			outputJsonObj.put("userId",user.getId());
-			return outputJsonObj.toString();
-		}
-		else {
-			return outputJsonObj.put("message","Verify Fail!").toString();
-		}
+		try {
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+			if(authentication.isAuthenticated()) {
+				UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
+				String token = jwtService.generateToken(user.getEmail());
 
+				outputJsonObj.put("token", token);
+				outputJsonObj.put("username", user.getUsername());
+				outputJsonObj.put("userId", user.getId());
+			}
+
+		} catch (BadCredentialsException e) {
+			outputJsonObj.put("message", "Sai email hoặc mật khẩu!");
+		}
+		return outputJsonObj.toString();
 	}
 
 	@Override
