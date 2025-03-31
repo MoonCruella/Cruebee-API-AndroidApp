@@ -20,10 +20,17 @@ public class UserEntity {
 	private String password;
 	private String email;
 	private String role;
+	private String sdt;
+	private String gender;
 	private String otp;
 	private boolean active;
 	private LocalDateTime optGeneratedTime;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
 	private List<PaymentEntity> userPayments;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<CartItemsEntity> cartItems;
 }

@@ -1,7 +1,11 @@
 package androidapp.service;
 
+import androidapp.entity.ProductEntity;
+import androidapp.entity.UserEntity;
 import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
+
+import java.util.Map;
 
 public interface UserService {
 	

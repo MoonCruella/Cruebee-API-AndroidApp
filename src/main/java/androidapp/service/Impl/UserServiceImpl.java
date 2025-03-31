@@ -2,14 +2,21 @@ package androidapp.service.Impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import androidapp.entity.CartItemsEntity;
+import androidapp.entity.ProductEntity;
+import androidapp.repository.CartItemRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.core.Authentication;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 import androidapp.entity.UserEntity;
@@ -33,42 +40,37 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private EmailUtil emailUtil;
 
-//	@Autowired
-//	private JWTService jwtService;
+	@Autowired
+	private JWTService jwtService;
 
-//	@Autowired
-//	private AuthenticationManager authenticationManager;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-//	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 	
 
 	@Override
 	public String register(RegisterModel registerModel) {
-		UserEntity userEx = userRepository.findUsersByUsername(registerModel.getUsername());
-		if(userEx != null) {
-			return "Username is already in use";
-		}
 
 		// Kiểm tra nếu đã tồn tại user với email đó và đã active
 		UserEntity userE = userRepository.findUsersByEmail(registerModel.getEmail());
 		if(userE != null && userE.isActive()) {
 			return "Email existed!!!";
 		}
-		System.out.println("Le Nguyet");
 		String otp = optUtil.generateOtp();
-		System.out.println(otp);
 		try {
 			emailUtil.sendOtpEmail(registerModel.getEmail(), otp);
 		} catch (MessagingException e) {
-			System.out.println("Error ne");
 			throw new RuntimeException("Unable to send otp please try again");
 		}
 		UserEntity user = new UserEntity();
 		user.setUsername(registerModel.getUsername());
 		user.setEmail(registerModel.getEmail());
-//		user.setPassword(encoder.encode(registerModel.getPassword()));
+		user.setPassword(encoder.encode(registerModel.getPassword()));
 		user.setOtp(otp);
 		user.setOptGeneratedTime(LocalDateTime.now());
+		user.setSdt(registerModel.getSdt());
+		user.setGender(registerModel.getGender());
 
 		// Kiểm tra nếu user đã đăng ký nhưng chưa active thì chỉ update thông tin cho user đó
 		if(userE != null && !userE.isActive()){
@@ -88,7 +90,7 @@ public class UserServiceImpl implements UserService {
 			return "Email not existed!!!";
 		}
 
-		// Thiết lập thời gian để xác thực email là trong vòng 60s
+		// Thiết lập thời gian để xác thực email là trong vòng 180s
 		if(user.getOtp().equals(otp) && Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
 			user.setActive(true);
 			user.setRole("USER");
@@ -126,6 +128,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String login(LoginModel loginModel) {
+		if (loginModel.getEmail() == null || loginModel.getPassword() == null || loginModel.getPassword().isEmpty()) {
+			return "Email hoặc mật khẩu không được để trống";
+		}
 		JSONObject outputJsonObj = new JSONObject();
 		UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
 		if(user == null) {
@@ -138,14 +143,15 @@ public class UserServiceImpl implements UserService {
 			return  outputJsonObj.put("message","Your account is not verified. Register again!").toString();
 		}
 
-//		//JWT : Check user => tạo token cho user
-//		Authentication authentication =
-//				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
-//		if(authentication.isAuthenticated()) {
-//			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
-//			outputJsonObj.put("username",user.getUsername());
-//			return outputJsonObj.toString();
-//		}
+		//JWT : Check user => tạo token cho user
+		Authentication authentication =
+				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+		if(authentication.isAuthenticated()) {
+			outputJsonObj.put("token",jwtService.generateToken(user.getEmail()));
+			outputJsonObj.put("username",user.getUsername());
+			outputJsonObj.put("userId",user.getId());
+			return outputJsonObj.toString();
+		}
 		else {
 			return outputJsonObj.put("message","Verify Fail!").toString();
 		}
@@ -179,7 +185,7 @@ public class UserServiceImpl implements UserService {
 		if(user == null) {
 			return "Email not existed!!!";
 		}
-//		user.setPassword(encoder.encode(password));
+		user.setPassword(encoder.encode(password));
 		userRepository.save(user);
 		return "Change password successful!";
 	}
@@ -190,8 +196,11 @@ public class UserServiceImpl implements UserService {
 		existing.setPassword(user.getPassword());
 		existing.setOtp(user.getOtp());
 		existing.setOptGeneratedTime(LocalDateTime.now());
+		existing.setSdt(user.getSdt());
+		existing.setGender(user.getGender());
 		userRepository.save(existing);
 	}
+
 
 	
 }
