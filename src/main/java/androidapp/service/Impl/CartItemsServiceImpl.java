@@ -3,6 +3,7 @@ package androidapp.service.Impl;
 import androidapp.entity.CartItemsEntity;
 import androidapp.entity.ProductEntity;
 import androidapp.entity.UserEntity;
+import androidapp.model.CartItemsModel;
 import androidapp.repository.CartItemRepository;
 import androidapp.repository.ProductRepository;
 import androidapp.repository.UserRepository;
@@ -23,26 +24,53 @@ public class CartItemsServiceImpl  implements CartItemsService {
     @Autowired
     private UserRepository userRepository;
 
-    // Thêm sản phẩm vào giỏ hàng
     @Override
-    public void addToCart(int userId, int productId, int quantity) {
+    public void addToCart(CartItemsModel cartItemsModel) {
+        int userId = cartItemsModel.getUserId();
+        int productId = cartItemsModel.getProductId();
+        int quantity = cartItemsModel.getQuantity();
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
         ProductEntity product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));
 
-        CartItemsEntity cartItem = new CartItemsEntity();
-        cartItem.setUser(user);
-        cartItem.setProduct(product);
-        cartItem.setQuantity(quantity);
+        // Kiểm tra sản phẩm có tồn tại trong giỏ hàng của user hay không
+        CartItemsEntity cartItem = cartRepository.findByUserIdAndProductId(userId, productId);
+
+        if (cartItem != null) {
+
+            // Nếu sản phẩm đã có trong giỏ hàng => Cộng dồn số lượng
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        } else {
+
+            // Nếu sản phẩm chưa tồn tại, thêm mới vào giỏ hàng
+            cartItem = new CartItemsEntity();
+            cartItem.setUser(user);
+            cartItem.setProduct(product);
+            cartItem.setQuantity(quantity);
+        }
 
         cartRepository.save(cartItem);
     }
+
+
 
     // Lấy danh sách giỏ hàng của người dùng
     @Override
     public List<CartItemsEntity> getUserCart(int userId) {
         return cartRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void deleteToCart(CartItemsModel cartItemsModel) {
+        int userId = cartItemsModel.getUserId();
+        int productId = cartItemsModel.getProductId();
+        int quantity = cartItemsModel.getQuantity();
+        // Kiểm tra sản phẩm có tồn tại trong giỏ hàng của user hay không
+        CartItemsEntity cartItem = cartRepository.findByUserIdAndProductId(userId, productId);
+        if (cartItem != null) {
+            cartRepository.delete(cartItem);
+        }
     }
 }
