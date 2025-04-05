@@ -6,18 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidapp.entity.CartItemsEntity;
-import androidapp.entity.ProductEntity;
-import androidapp.repository.CartItemRepository;
+import androidapp.entity.TokenEntity;
+import androidapp.model.AuthenticationResponse;
+import androidapp.repository.TokenRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 import androidapp.entity.UserEntity;
@@ -47,8 +50,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
+	@Autowired
+	private TokenRepository tokenRepository;
+
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-	
 
 	@Override
 	public String register(RegisterModel registerModel) {
@@ -81,30 +86,36 @@ public class UserServiceImpl implements UserService {
 			userRepository.save(user);
 		}
 		return "User registration successful";
+
 	}
 
 	@Override
-	public String verifyAccount(String email, String otp) {
-
+	public AuthenticationResponse verifyAccount(String email, String otp) {
 		UserEntity user = userRepository.findUsersByEmail(email);
-		if(user == null) {
-			return "Email not existed!!!";
+
+		if (user == null) {
+			return new AuthenticationResponse("Email not found");
 		}
 
-		// Thiết lập thời gian để xác thực email là trong vòng 180s
-		if(user.getOtp().equals(otp) && Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
-			user.setActive(true);
-			user.setRole("USER");
-			userRepository.save(user);
-			return "OTP verified. You can login";
+		if (user.getOtp() == null || !user.getOtp().equals(otp)) {
+			return new AuthenticationResponse("Invalid OTP. Please check and try again.");
 		}
-		else if(!user.getOtp().equals(otp))
-		{
-			return "Invalid OTP. Please check and try again.";
+
+		if (user.getOptGeneratedTime() == null || Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds() > 180) {
+			return new AuthenticationResponse("OTP has expired. Please regenerate and try again.");
 		}
-		return "OTP has expired. Please regenerate and try again.";
-			
+
+		user.setActive(true);
+		user.setRole("USER");
+		userRepository.save(user);
+
+		String accessToken = jwtService.generateAccessToken(user.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+		saveUserToken(accessToken, refreshToken, user);
+
+		return new AuthenticationResponse(accessToken, refreshToken,"OTP verified. You can login.");
 	}
+
 
 	@Override
 	public String regenerateOtp(String email) {
@@ -123,7 +134,7 @@ public class UserServiceImpl implements UserService {
 		user.setOtp(otp);
 		user.setOptGeneratedTime(LocalDateTime.now());
 		userRepository.save(user);
-		return "Email sent ... please verify account within 1 minute";
+		return "Email sent ... please verify account within 3 minute";
 		
 	}
 
@@ -136,16 +147,21 @@ public class UserServiceImpl implements UserService {
 					new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
 			if(authentication.isAuthenticated()) {
 				UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
-				String token = jwtService.generateToken(user.getEmail());
+				String accessToken = jwtService.generateAccessToken(user.getEmail());
+				String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-				outputJsonObj.put("token", token);
+				outputJsonObj.put("token", accessToken);
 				outputJsonObj.put("username", user.getUsername());
+				outputJsonObj.put("refresh_token",refreshToken);
 				outputJsonObj.put("userId", user.getId());
+				revokeAllTokenByUser(user);
+				saveUserToken(accessToken, refreshToken, user);
 			}
 
 		} catch (BadCredentialsException e) {
 			outputJsonObj.put("message", "Sai email hoặc mật khẩu!");
 		}
+
 		return outputJsonObj.toString();
 	}
 
@@ -160,7 +176,7 @@ public class UserServiceImpl implements UserService {
 		// Check if OTP matches and if the OTP is within the valid time window (60 seconds)
 		long otpDurationInSeconds = Duration.between(user.getOptGeneratedTime(), LocalDateTime.now()).getSeconds();
 		if (user.getOtp().equals(otp)) {
-			if (otpDurationInSeconds < 60) {
+			if (otpDurationInSeconds < 180) {
 				return "OTP Verified. You can set new password";
 			} else {
 				return "OTP has expired. Please regenerate and try again.";
@@ -192,6 +208,61 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(existing);
 	}
 
+	public ResponseEntity refreshToken(
+			HttpServletRequest request,
+			HttpServletResponse response) {
+		// extract the token from authorization header
+		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-	
+		if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+		}
+
+		String token = authHeader.substring(7);
+
+		// extract username from token
+		String username = jwtService.extractUserName(token);
+
+		// check if the user exist in database
+		UserEntity user = userRepository.findByUsername(username)
+				.orElseThrow(()->new RuntimeException("No user found"));
+
+		// check if the token is valid
+		if(jwtService.isValidRefreshToken(token, user)) {
+			// generate access token
+			String accessToken = jwtService.generateAccessToken(user.getEmail());
+			String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+
+			revokeAllTokenByUser(user);
+			saveUserToken(accessToken, refreshToken, user);
+
+			return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+		}
+
+		return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+	}
+
+	private void revokeAllTokenByUser(UserEntity user) {
+		List<TokenEntity> validTokens = tokenRepository.findAllAccessTokensByUser(user.getId());
+		if(validTokens.isEmpty()) {
+			return;
+		}
+
+		validTokens.forEach(t-> {
+			t.setLoggedOut(true);
+		});
+
+		tokenRepository.saveAll(validTokens);
+	}
+	private void saveUserToken(String accessToken, String refreshToken, UserEntity user) {
+		TokenEntity token = new TokenEntity();
+		token.setAccessToken(accessToken);
+		token.setRefreshToken(refreshToken);
+		token.setLoggedOut(false);
+		token.setUser(user);
+		tokenRepository.save(token);
+	}
+
+
 }

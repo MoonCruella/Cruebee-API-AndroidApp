@@ -36,7 +36,7 @@ public class SecurityConfig  {
             "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/api/auth/**",
             "/api/test/**", "/authenticate",
             "register","login","loginn","verify-account",
-            "categories/**","products/**","promotions/**","/upload/**","/download/**",
+            "categories/**","products/**","promotions/**","/upload/**","/download/**","/payment/**",
             "regenerate-otp","forget-password","verify-otp","reset-password",
             "/actuator/swagger-ui/**","/actuator/openapi"};
 
