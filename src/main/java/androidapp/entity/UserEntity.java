@@ -39,4 +39,8 @@ public class UserEntity {
 	@JsonIgnore
 	private List<TokenEntity> tokens;
 
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<UserAddressEntity> addresses;
+
 }

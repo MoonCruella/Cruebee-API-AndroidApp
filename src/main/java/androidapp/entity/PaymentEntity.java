@@ -35,4 +35,8 @@ public class PaymentEntity {
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private List<PaymentProductEntity> products;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shopId")
+    private ShopEntity shop;
 }
