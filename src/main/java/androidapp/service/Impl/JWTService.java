@@ -1,9 +1,13 @@
 package androidapp.service.Impl;
 
+import androidapp.entity.UserEntity;
+import androidapp.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,16 @@ import java.util.function.Function;
 @Service
 public class JWTService {
     private String secretKey = "";
+
+    @Value("${application.security.jwt.access-token-expiration}")
+    private long accessTokenExpire;
+
+    @Value("${application.security.jwt.refresh-token-expiration}")
+    private long refreshTokenExpire;
+
+    @Autowired
+    TokenRepository tokenRepository;
+
     public JWTService(){
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
@@ -29,7 +43,19 @@ public class JWTService {
         }
 
     }
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
+
+        // Thiet lap thoi han cua access token la 24h
+        return generateToken(username,accessTokenExpire);
+    }
+
+    public String generateRefreshToken(String username) {
+
+        //Thiet lap thoi han cho refresh token là 7 ngày
+        return generateToken(username,refreshTokenExpire);
+    }
+
+    public String generateToken(String username,long expiration) {
         Map<String,Object> claims = new HashMap<String,Object>();
 
         return Jwts.builder()
@@ -37,12 +63,14 @@ public class JWTService {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30000)) // 60 * 60 = 1h. 1h * 30 = 30h. Tinh theo mili giay thi phai nhan them 1000. con khong thi 30h = 108000s/1000 = 108s = 1'48s
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .and()
                 .signWith(getKey())
                 .compact();
 
     }
+
+
 
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -78,5 +106,16 @@ public class JWTService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public boolean isValidRefreshToken(String token, UserEntity user) {
+        String username = extractUserName(token);
+
+        boolean validRefreshToken = tokenRepository
+                .findByRefreshToken(token)
+                .map(t -> !t.isLoggedOut())
+                .orElse(false);
+
+        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validRefreshToken;
     }
 }

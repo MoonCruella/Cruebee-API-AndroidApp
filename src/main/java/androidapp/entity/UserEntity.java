@@ -33,4 +33,14 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<CartItemsEntity> cartItems;
+
+
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<TokenEntity> tokens;
+
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<UserAddressEntity> addresses;
+
 }
