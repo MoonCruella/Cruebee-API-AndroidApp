@@ -19,4 +19,6 @@ public interface UserAddressRepository extends JpaRepository<UserAddressEntity,I
             @Param("latitude") Double latitude,
             @Param("longitude") Double longitude
     );
+
+    UserAddressEntity findByUserAndIsPrimary(UserEntity user, int isPrimary);
 }
