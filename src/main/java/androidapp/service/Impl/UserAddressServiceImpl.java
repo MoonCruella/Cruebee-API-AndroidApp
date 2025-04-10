@@ -40,6 +40,9 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddressEntity.setAddressDetails(address.getAddress_details());
             userAddressEntity.setLatitude(address.getLatitude());
             userAddressEntity.setLongitude(address.getLongitude());
+            userAddressEntity.setUsername(address.getUsername());
+            userAddressEntity.setNote(address.getNote());
+            userAddressEntity.setSdt(address.getSdt());
             userAddressRepository.save(userAddressEntity);
         }
         else {
@@ -48,23 +51,23 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddress.setLatitude(address.getLatitude());
             userAddress.setLongitude(address.getLongitude());
             userAddress.setIsPrimary(address.getIs_primary());
-            userAddress.setUser(user);
+            userAddress.setUsername(user.getUsername());
+            userAddress.setUsername(address.getUsername());
+            userAddress.setNote(address.getNote());
+            userAddress.setSdt(address.getSdt());
             userAddressRepository.save(userAddress);
         }
 
     }
 
     @Override
-    public void deleteAddress(AddressRequest address) {
-        Optional<UserEntity> userEntity = userRepository.findById(address.getUserId());
-        if (userEntity.isPresent()) {
-            UserEntity user = userEntity.get();
-            Optional<UserAddressEntity> userAddressEntity = userAddressRepository.findUserAddressEntityByUserAndCoordinates(user,address.getLatitude(),address.getLongitude());
-            if (userAddressEntity.isPresent()) {
-                UserAddressEntity userAddress = userAddressEntity.get();
-                userAddressRepository.delete(userAddress);
-            }
+    public void deleteAddress(int addressId) {
+        Optional<UserAddressEntity> userAddressEntity = userAddressRepository.findById(addressId);
+        if (userAddressEntity.isPresent()) {
+            UserAddressEntity userAddress = userAddressEntity.get();
+            userAddressRepository.delete(userAddress);
         }
+
     }
 
     @Override
@@ -86,6 +89,39 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddress.setLatitude(address.getLatitude());
             userAddress.setLongitude(address.getLongitude());
             userAddress.setIsPrimary(address.getIs_primary());
+            userAddress.setUsername(address.getUsername());
+            userAddress.setNote(address.getNote());
+            userAddress.setSdt(address.getSdt());
+            userAddress.setUser(user);
+            userAddressRepository.save(userAddress);
+        } else {
+            System.out.println("User not found");
+        }
+    }
+
+    @Override
+    public void updateAddress(AddressRequest address) {
+        Optional<UserEntity> userEntity = userRepository.findById(address.getUserId());
+        if (userEntity.isPresent()) {
+            UserEntity user = userEntity.get();
+
+            // Kiem tra neu set dia chi nay la mac dinh => doi dia chi mac dinh hien tai sang 0
+            if(address.getIs_primary() == 1){
+                UserAddressEntity userAddressEntity = userAddressRepository.findByUserAndIsPrimary(user,1);
+                if(userAddressEntity != null){
+                    userAddressEntity.setIsPrimary(0);
+                    userAddressRepository.save(userAddressEntity);
+                }
+            }
+
+            UserAddressEntity userAddress = userAddressRepository.findById(address.getId()).get();
+            userAddress.setAddressDetails(address.getAddress_details());
+            userAddress.setLatitude(address.getLatitude());
+            userAddress.setLongitude(address.getLongitude());
+            userAddress.setIsPrimary(address.getIs_primary());
+            userAddress.setUsername(address.getUsername());
+            userAddress.setNote(address.getNote());
+            userAddress.setSdt(address.getSdt());
             userAddress.setUser(user);
             userAddressRepository.save(userAddress);
         } else {
@@ -101,5 +137,15 @@ public class UserAddressServiceImpl implements UserAddressService {
             return userAddressRepository.findUserAddressEntityByUser(user);
         }
         return List.of();
+    }
+
+    @Override
+    public UserAddressEntity getAddress(int userId) {
+        Optional<UserEntity> userEntity = userRepository.findById(userId);
+        if (userEntity.isPresent()) {
+            UserEntity user = userEntity.get();
+            return userAddressRepository.findByUserAndIsPrimary(user, 1);
+        }
+        return null;
     }
 }

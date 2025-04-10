@@ -149,11 +149,15 @@ public class UserServiceImpl implements UserService {
 				UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
 				String accessToken = jwtService.generateAccessToken(user.getEmail());
 				String refreshToken = jwtService.generateRefreshToken(user.getEmail());
-
+				JSONObject userJson = new JSONObject();
+				userJson.put("id", user.getId());
+				userJson.put("email", user.getEmail());
+				userJson.put("username", user.getUsername());
+				userJson.put("sdt", user.getSdt());
+				userJson.put("password", user.getPassword());
+				outputJsonObj.put("user", userJson);
 				outputJsonObj.put("token", accessToken);
-				outputJsonObj.put("username", user.getUsername());
 				outputJsonObj.put("refresh_token",refreshToken);
-				outputJsonObj.put("userId", user.getId());
 				revokeAllTokenByUser(user);
 				saveUserToken(accessToken, refreshToken, user);
 			}

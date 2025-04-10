@@ -20,6 +20,12 @@ public class UserAddressController {
         return ResponseEntity.ok("Da luu dia chi!");
     }
 
+    @PostMapping("/addresses/update")
+    public ResponseEntity<?> updateUserAddress(@RequestBody AddressRequest address) {
+        userAddressService.updateAddress(address);
+        return ResponseEntity.ok("Da luu dia chi!");
+    }
+
     @PostMapping("/addresses/add")
     public ResponseEntity<?> addUserAddress(@RequestBody AddressRequest address) {
         userAddressService.addAddress(address);
@@ -27,8 +33,8 @@ public class UserAddressController {
     }
 
     @PostMapping("/addresses/delete")
-    public ResponseEntity<?> deleteUserAddress(@RequestBody AddressRequest address) {
-        userAddressService.deleteAddress(address);
+    public ResponseEntity<?> deleteUserAddress(@RequestParam int addressId) {
+        userAddressService.deleteAddress(addressId);
         return ResponseEntity.ok("Da xoa dia chi!");
     }
 
@@ -36,6 +42,13 @@ public class UserAddressController {
     public List<UserAddressEntity> getUserAddress(@RequestParam int userId) {
         return userAddressService.findAddress(userId);
     }
+
+    @GetMapping("/addresses/primary")
+    public UserAddressEntity getUserAddressPrimary(@RequestParam int userId) {
+        return userAddressService.getAddress(userId);
+    }
+
+
 
 
 }

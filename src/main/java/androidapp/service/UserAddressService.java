@@ -9,7 +9,9 @@ import java.util.List;
 public interface UserAddressService {
     void saveAddress(AddressRequest address);
     void updateIsPrimary(UserEntity user,AddressRequest address);
-    void deleteAddress(AddressRequest address);
+    void deleteAddress(int addressId);
+    void updateAddress(AddressRequest address);
     void addAddress(AddressRequest address);
     List<UserAddressEntity> findAddress(int userId);
+    UserAddressEntity getAddress(int userId);
 }

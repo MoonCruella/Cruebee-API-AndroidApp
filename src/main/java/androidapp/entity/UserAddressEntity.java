@@ -20,6 +20,10 @@ public class UserAddressEntity {
     private String addressDetails;
     private double latitude;
     private double longitude;
+    private String username;
+    private String note;
+    private String sdt;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
