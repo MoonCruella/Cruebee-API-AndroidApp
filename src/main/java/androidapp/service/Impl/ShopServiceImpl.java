@@ -27,7 +27,7 @@ public class ShopServiceImpl implements ShopService {
 
             String formattedDistance = String.format("%.2f", distance);
             double roundedDistance = Double.parseDouble(formattedDistance);
-            if(roundedDistance <= 10)
+            if(roundedDistance <= 30)
             {
                 shopsInRange.add(new ResponseShop(roundedDistance,shopEntity));
             }
