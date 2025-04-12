@@ -51,7 +51,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             userAddress.setLatitude(address.getLatitude());
             userAddress.setLongitude(address.getLongitude());
             userAddress.setIsPrimary(address.getIs_primary());
-            userAddress.setUsername(user.getUsername());
+            userAddress.setUser(user);
             userAddress.setUsername(address.getUsername());
             userAddress.setNote(address.getNote());
             userAddress.setSdt(address.getSdt());
@@ -114,16 +114,21 @@ public class UserAddressServiceImpl implements UserAddressService {
                 }
             }
 
-            UserAddressEntity userAddress = userAddressRepository.findById(address.getId()).get();
-            userAddress.setAddressDetails(address.getAddress_details());
-            userAddress.setLatitude(address.getLatitude());
-            userAddress.setLongitude(address.getLongitude());
-            userAddress.setIsPrimary(address.getIs_primary());
-            userAddress.setUsername(address.getUsername());
-            userAddress.setNote(address.getNote());
-            userAddress.setSdt(address.getSdt());
-            userAddress.setUser(user);
-            userAddressRepository.save(userAddress);
+            Optional<UserAddressEntity> userAddressEntity = userAddressRepository.findById(address.getId());
+            if (userAddressEntity.isPresent()) {
+                UserAddressEntity userAddress = userAddressEntity.get();
+                userAddress.setAddressDetails(address.getAddress_details());
+                userAddress.setLatitude(address.getLatitude());
+                userAddress.setLongitude(address.getLongitude());
+                userAddress.setIsPrimary(address.getIs_primary());
+                userAddress.setUsername(address.getUsername());
+                userAddress.setNote(address.getNote());
+                userAddress.setSdt(address.getSdt());
+                userAddress.setUser(user);
+                userAddressRepository.save(userAddress);
+            }
+
+
         } else {
             System.out.println("User not found");
         }
