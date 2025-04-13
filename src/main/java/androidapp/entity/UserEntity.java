@@ -43,4 +43,6 @@ public class UserEntity {
 	@JsonIgnore
 	private List<UserAddressEntity> addresses;
 
+
+
 }

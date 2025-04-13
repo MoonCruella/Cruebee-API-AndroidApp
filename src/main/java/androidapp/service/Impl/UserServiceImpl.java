@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import androidapp.entity.TokenEntity;
 import androidapp.model.AuthenticationResponse;
@@ -154,6 +155,7 @@ public class UserServiceImpl implements UserService {
 				userJson.put("email", user.getEmail());
 				userJson.put("username", user.getUsername());
 				userJson.put("sdt", user.getSdt());
+				userJson.put("gender",user.getGender());
 				userJson.put("password", user.getPassword());
 				outputJsonObj.put("user", userJson);
 				outputJsonObj.put("token", accessToken);
@@ -268,5 +270,13 @@ public class UserServiceImpl implements UserService {
 		tokenRepository.save(token);
 	}
 
+	@Override
+	public void updateAccount(UserEntity user) {
+		UserEntity existing = userRepository.findUsersById((user.getId()));
+		existing.setUsername(user.getUsername());
+		existing.setSdt(user.getSdt());
+		existing.setGender(user.getGender());
+		userRepository.save(existing);
+	}
 
 }

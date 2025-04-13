@@ -1,5 +1,6 @@
 package androidapp.controller;
 import androidapp.entity.CategoryEntity;
+import androidapp.entity.UserEntity;
 import androidapp.service.CategoryService;
 import androidapp.service.Impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,6 +90,11 @@ public class UserController {
     @PutMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password){
     	return new ResponseEntity<>(userService.resetPassword(email,password),HttpStatus.OK);
+    }
+    @PutMapping("/user/update")
+    public ResponseEntity<?> updateAccount(@RequestBody UserEntity userEntity){
+        userService.updateAccount(userEntity);
+        return ResponseEntity.ok("Cap nhat tai khoan thanh cong!");
     }
 
 }

@@ -1,5 +1,6 @@
 package androidapp.service;
 
+import androidapp.entity.UserEntity;
 import androidapp.model.AuthenticationResponse;
 import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
@@ -18,4 +19,5 @@ public interface UserService {
 	String verifyOtp(String email, String otp);
 	String resetPassword(String email, String password);
 	ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response);
+	void updateAccount(UserEntity userEntity);
 }
