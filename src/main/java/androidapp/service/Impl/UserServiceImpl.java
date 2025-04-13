@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import androidapp.entity.TokenEntity;
 import androidapp.model.AuthenticationResponse;
+import androidapp.model.ChangePwRequest;
 import androidapp.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -277,6 +278,22 @@ public class UserServiceImpl implements UserService {
 		existing.setSdt(user.getSdt());
 		existing.setGender(user.getGender());
 		userRepository.save(existing);
+	}
+
+	@Override
+	public String changePw(ChangePwRequest changePwRequest) {
+		try {
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(changePwRequest.getEmail(), changePwRequest.getPassword()));
+			if (authentication.isAuthenticated()) {
+				UserEntity user = userRepository.findUsersByEmail(changePwRequest.getEmail());
+				user.setPassword(encoder.encode(changePwRequest.getNewPassword()));
+				userRepository.save(user);
+			}
+		} catch (BadCredentialsException e) {
+			return "Sai mật khẩu!";
+		}
+		return "Cập nhật mật khẩu thành công!";
 	}
 
 }

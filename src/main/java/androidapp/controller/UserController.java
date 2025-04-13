@@ -1,6 +1,7 @@
 package androidapp.controller;
 import androidapp.entity.CategoryEntity;
 import androidapp.entity.UserEntity;
+import androidapp.model.ChangePwRequest;
 import androidapp.service.CategoryService;
 import androidapp.service.Impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,6 +97,12 @@ public class UserController {
         userService.updateAccount(userEntity);
         return ResponseEntity.ok("Cap nhat tai khoan thanh cong!");
     }
+
+    @PutMapping("/user/change-pw")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePwRequest request){
+        return new ResponseEntity<>(userService.changePw(request),HttpStatus.OK);
+    }
+
 
 }
 

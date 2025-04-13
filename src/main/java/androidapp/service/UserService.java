@@ -2,6 +2,7 @@ package androidapp.service;
 
 import androidapp.entity.UserEntity;
 import androidapp.model.AuthenticationResponse;
+import androidapp.model.ChangePwRequest;
 import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,4 +21,5 @@ public interface UserService {
 	String resetPassword(String email, String password);
 	ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response);
 	void updateAccount(UserEntity userEntity);
+	String changePw(ChangePwRequest changePwRequest);
 }
