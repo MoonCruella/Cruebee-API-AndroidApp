@@ -23,15 +23,14 @@ public class PaymentEntity {
     private UserEntity user;
 
     private String addressUser;
-    private String addressShop;
-    private String firstName;
-    private String lastName;
+    private String fullName;
     private String sdt;
     private String note;
     private Boolean utensils;
     private Long totalPrice;
     private LocalDateTime receivedDate;
     private LocalDateTime orderDate;
+    private String paymentMethod;
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private List<PaymentProductEntity> products;
