@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CartItemsController {
@@ -16,15 +18,19 @@ public class CartItemsController {
     private CartItemsService cartService;
 
     @PostMapping("/cart/add")
-    public ResponseEntity<String> addToCart(@RequestBody CartItemsModel cartItem) {
+    public ResponseEntity<Map<String, String>> addToCart(@RequestBody CartItemsModel cartItem) {
         cartService.addToCart(cartItem);
-        return ResponseEntity.ok("Sản phẩm đã được thêm vào giỏ hàng!");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Sản phẩm đã được thêm vào giỏ hàng");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/cart/delete")
-    public ResponseEntity<String> deleteToCart(@RequestBody CartItemsModel cartItem) {
+    public ResponseEntity<Map<String, String>> deleteToCart(@RequestBody CartItemsModel cartItem) {
         cartService.deleteToCart(cartItem);
-        return ResponseEntity.ok("Sản phẩm đã được xoa khoi giỏ hàng!");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Sản phẩm đã được xóa khỏi giỏ hàng");
+        return ResponseEntity.ok(response);
     }
 
 

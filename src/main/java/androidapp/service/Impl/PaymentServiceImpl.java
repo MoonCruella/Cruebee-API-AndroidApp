@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,4 +53,15 @@ public class PaymentServiceImpl implements PaymentService {
 
         return "Đặt hàng thành công!";
     }
+
+    @Override
+    public Optional<PaymentEntity> findByPaymentId(int paymentId) {
+        return paymentRepository.findById(paymentId);
+    }
+
+    @Override
+    public List<PaymentEntity> findByUserId(int userId) {
+        return paymentRepository.findByUserId(userId);
+    }
+
 }

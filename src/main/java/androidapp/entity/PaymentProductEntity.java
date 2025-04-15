@@ -17,6 +17,7 @@ public class PaymentProductEntity {
     private int quantity;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "payment_id")
     private PaymentEntity payment;
 
