@@ -9,6 +9,7 @@ import androidapp.repository.PaymentRepository;
 import androidapp.repository.ProductRepository;
 import androidapp.repository.UserRepository;
 import androidapp.service.PaymentService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findById(paymentId);
     }
 
-    @Override
+    @Transactional
     public List<PaymentEntity> findByUserId(int userId) {
         return paymentRepository.findByUserId(userId);
     }
