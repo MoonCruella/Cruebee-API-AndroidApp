@@ -17,12 +17,14 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 
 @Configuration
 
 // DON'T use the default luong of spring security => USE this config for it
 @EnableWebSecurity
+@EnableWebMvc
 public class SecurityConfig  {
 
     @Autowired
