@@ -25,7 +25,6 @@ public class UserPrincipal implements org.springframework.security.core.userdeta
 
     @Override
     public String getUsername() {
-        System.out.println("nguyetsss");
         return user.getEmail();
     }
 

@@ -52,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
         // Chỉ cần lưu payment, Hibernate sẽ tự lưu luôn danh sách products
         paymentRepository.save(payment);
 
-        return "Đặt hàng thành công!";
+        return "Ordering Successfully!";
     }
 
     @Override

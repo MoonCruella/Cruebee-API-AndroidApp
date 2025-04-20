@@ -30,14 +30,14 @@ public class PaymentEntity {
     private String note;
     private Boolean utensils;
     private Long totalPrice;
-    private LocalDateTime receivedDate;
     private LocalDateTime orderDate;
     private String paymentMethod;
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private List<PaymentProductEntity> products;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne
     @JoinColumn(name = "shopId")
     private ShopEntity shop;
 }

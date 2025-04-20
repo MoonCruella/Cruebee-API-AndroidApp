@@ -33,7 +33,7 @@ public class ShopEntity {
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<PaymentEntity> payments;
 
