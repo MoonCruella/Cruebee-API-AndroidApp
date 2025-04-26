@@ -33,6 +33,14 @@ public class CartItemsController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/cart/clear")
+    public ResponseEntity<Map<String, String>> deleteToCart(@RequestParam int userId) {
+        cartService.clearCart(userId);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Đã xóa hết giỏ hàng");
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/cart/{userId}")
     public ResponseEntity<List<CartItemsEntity>> getUserCart(@PathVariable int userId) {

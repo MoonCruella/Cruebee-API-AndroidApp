@@ -8,10 +8,12 @@ import androidapp.repository.CartItemRepository;
 import androidapp.repository.ProductRepository;
 import androidapp.repository.UserRepository;
 import androidapp.service.CartItemsService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartItemsServiceImpl  implements CartItemsService {
@@ -71,6 +73,16 @@ public class CartItemsServiceImpl  implements CartItemsService {
         CartItemsEntity cartItem = cartRepository.findByUserIdAndProductId(userId, productId);
         if (cartItem != null) {
             cartRepository.delete(cartItem);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void clearCart(int userId) {
+        Optional<UserEntity> user = userRepository.findById(userId);
+        if(user.isPresent()) {
+            UserEntity userEntity = user.get();
+            cartRepository.deleteAllByUser(userEntity);
         }
     }
 }

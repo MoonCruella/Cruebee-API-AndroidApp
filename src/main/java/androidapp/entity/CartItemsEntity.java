@@ -15,7 +15,6 @@ public class CartItemsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     private int quantity;
 
     // Một giỏ hàng thuộc về một User

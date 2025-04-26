@@ -9,4 +9,5 @@ public interface CartItemsService {
     public void addToCart(CartItemsModel cartItemsModel);
     public List<CartItemsEntity> getUserCart(int userId);
     void deleteToCart(CartItemsModel cartItem);
+    void clearCart(int userId);
 }

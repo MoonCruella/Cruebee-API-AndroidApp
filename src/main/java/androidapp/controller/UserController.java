@@ -89,8 +89,8 @@ public class UserController {
     }
     
     @PutMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String password){
-    	return new ResponseEntity<>(userService.resetPassword(email,password),HttpStatus.OK);
+    public ResponseEntity<String> resetPassword(@RequestBody RegisterModel registerModel){
+    	return new ResponseEntity<>(userService.resetPassword(registerModel.getEmail(),registerModel.getPassword()),HttpStatus.OK);
     }
     @PutMapping("/user/update")
     public ResponseEntity<?> updateAccount(@RequestBody UserEntity userEntity){
