@@ -32,7 +32,7 @@ public class ProductEntity {
     private CategoryEntity category;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY )
     @JoinColumn(name = "imageId")
     @JsonIgnore
     private Attachment attachment;

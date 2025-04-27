@@ -296,4 +296,22 @@ public class UserServiceImpl implements UserService {
 		return "Cập nhật mật khẩu thành công!";
 	}
 
+	@Override
+	public String deleteAccount(LoginModel loginModel) {
+		String mes = null;
+		try {
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(loginModel.getEmail(), loginModel.getPassword()));
+			if(authentication.isAuthenticated()) {
+				UserEntity user = userRepository.findUsersByEmail(loginModel.getEmail());
+				userRepository.delete(user);
+				mes =  "Delete Success!";
+			}
+
+		} catch (BadCredentialsException e) {
+			mes =  "Wrong password!";
+		}
+		return mes;
+	}
+
 }

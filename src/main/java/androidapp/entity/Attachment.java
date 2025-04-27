@@ -30,11 +30,11 @@ public class Attachment {
         this.data = data;
     }
 
-    @OneToOne(mappedBy = "attachment")
+    @OneToOne(mappedBy = "attachment", orphanRemoval = true)
     @JsonIgnore
     private ProductEntity product;
 
-    @OneToOne(mappedBy = "attachment")
+    @OneToOne(mappedBy = "attachment", orphanRemoval = true)
     @JsonIgnore
     private CategoryEntity category;
 

@@ -7,6 +7,7 @@ import androidapp.model.LoginModel;
 import androidapp.model.RegisterModel;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -22,4 +23,5 @@ public interface UserService {
 	ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response);
 	void updateAccount(UserEntity userEntity);
 	String changePw(ChangePwRequest changePwRequest);
+	String deleteAccount(LoginModel loginModel);
 }

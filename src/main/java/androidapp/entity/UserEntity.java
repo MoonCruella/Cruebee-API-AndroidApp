@@ -26,7 +26,7 @@ public class UserEntity {
 	private boolean active;
 	private LocalDateTime optGeneratedTime;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	@JsonIgnore
 	private List<PaymentEntity> userPayments;
 
@@ -35,11 +35,11 @@ public class UserEntity {
 	private List<CartItemsEntity> cartItems;
 
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user",orphanRemoval = true)
 	@JsonIgnore
 	private List<TokenEntity> tokens;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	@JsonIgnore
 	private List<UserAddressEntity> addresses;
 
