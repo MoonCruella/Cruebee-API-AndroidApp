@@ -19,8 +19,9 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/order")
-    public ResponseEntity<?> placeOrder(@RequestBody PaymentEntity payment) {
-        return new ResponseEntity<>(paymentService.placeOrder(payment), HttpStatus.OK);
+    public String placeOrder(@RequestBody PaymentEntity payment) {
+        // Gọi service để xử lý đặt hàng và trả về ID của đơn hàng
+        return paymentService.placeOrder(payment);
     }
     @GetMapping("")
     public List<PaymentEntity> getPaymentByUser(@RequestParam int userId) {
@@ -31,5 +32,14 @@ public class PaymentController {
     public Optional<PaymentEntity> getPaymentById(@RequestParam int paymentId) {
         Optional<PaymentEntity> payment = paymentService.findByPaymentId(paymentId);
         return payment;   
+    }
+
+    @GetMapping("/findByIds")
+    public ResponseEntity<List<PaymentEntity>> findPaymentsByIds(@RequestParam List<Integer> paymentIds) {
+        List<PaymentEntity> payments = paymentService.findPaymentsByIds(paymentIds);
+        if (payments.isEmpty()) {
+            return ResponseEntity.noContent().build();  // Trả về mã 204 nếu không tìm thấy
+        }
+        return ResponseEntity.ok(payments);  // Trả về danh sách Payment với mã 200
     }
 }

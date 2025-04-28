@@ -30,6 +30,7 @@ public class PaymentEntity {
     private String note;
     private Boolean utensils;
     private Long totalPrice;
+    private String status;
     private LocalDateTime orderDate;
     private String paymentMethod;
 
