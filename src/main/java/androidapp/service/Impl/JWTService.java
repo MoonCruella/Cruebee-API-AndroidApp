@@ -45,7 +45,7 @@ public class JWTService {
     }
     public String generateAccessToken(String username) {
 
-        // Thiet lap thoi han cua access token la 24h
+        // Thiet lap thoi han cua access token la 1h
         return generateToken(username,accessTokenExpire);
     }
 
@@ -116,6 +116,6 @@ public class JWTService {
                 .map(t -> !t.isLoggedOut())
                 .orElse(false);
 
-        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validRefreshToken;
+        return (username.equals(user.getEmail())) && !isTokenExpired(token) && validRefreshToken;
     }
 }

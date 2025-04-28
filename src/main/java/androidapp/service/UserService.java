@@ -20,7 +20,7 @@ public interface UserService {
 	String login(LoginModel loginModel);
 	String verifyOtp(String email, String otp);
 	String resetPassword(String email, String password);
-	ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response);
+	ResponseEntity<Map<String, String>> refreshToken(HttpServletRequest request, HttpServletResponse response);
 	void updateAccount(UserEntity userEntity);
 	String changePw(ChangePwRequest changePwRequest);
 	String deleteAccount(LoginModel loginModel);

@@ -64,14 +64,13 @@ public class UserController {
         return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
     }
 
-    @PostMapping("/refresh_token")
-    public ResponseEntity refreshToken(
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Map<String, String>> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
         return userService.refreshToken(request, response);
     }
-
     // Cập nhật thuộc tính otp của User khi tạo lại otp mới 
     @PutMapping("/regenerate-otp")
     public ResponseEntity<String> regenerateOtp(@RequestParam String email){
@@ -107,6 +106,7 @@ public class UserController {
     public ResponseEntity<String> deleteAccount(@RequestBody LoginModel request){
         return new ResponseEntity<>(userService.deleteAccount(request),HttpStatus.OK);
     }
+
 }
 
 

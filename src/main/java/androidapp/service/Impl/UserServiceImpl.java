@@ -215,14 +215,14 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(existing);
 	}
 
-	public ResponseEntity refreshToken(
+	public ResponseEntity<Map<String, String>> refreshToken(
 			HttpServletRequest request,
 			HttpServletResponse response) {
 		// extract the token from authorization header
 		String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
 		if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Refresh token is missing"));
 		}
 
 		String token = authHeader.substring(7);
@@ -231,7 +231,7 @@ public class UserServiceImpl implements UserService {
 		String username = jwtService.extractUserName(token);
 
 		// check if the user exist in database
-		UserEntity user = userRepository.findByUsername(username)
+		UserEntity user = userRepository.findByEmail(username)
 				.orElseThrow(()->new RuntimeException("No user found"));
 
 		// check if the token is valid
@@ -240,14 +240,16 @@ public class UserServiceImpl implements UserService {
 			String accessToken = jwtService.generateAccessToken(user.getEmail());
 			String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
+			Map<String, String> tokens = new HashMap<>();
+			tokens.put("accessToken", accessToken);
+			tokens.put("refreshToken", refreshToken);
+
 			revokeAllTokenByUser(user);
 			saveUserToken(accessToken, refreshToken, user);
 
-			return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+			return ResponseEntity.ok(tokens);
 		}
-
-		return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Invalid refresh token"));
 	}
 
 	private void revokeAllTokenByUser(UserEntity user) {
@@ -260,7 +262,6 @@ public class UserServiceImpl implements UserService {
 			t.setLoggedOut(true);
 		});
 
-		tokenRepository.saveAll(validTokens);
 	}
 	private void saveUserToken(String accessToken, String refreshToken, UserEntity user) {
 		TokenEntity token = new TokenEntity();
@@ -291,9 +292,9 @@ public class UserServiceImpl implements UserService {
 				userRepository.save(user);
 			}
 		} catch (BadCredentialsException e) {
-			return "Sai mật khẩu!";
+			return "Wrong password!";
 		}
-		return "Cập nhật mật khẩu thành công!";
+		return "Change password successful!";
 	}
 
 	@Override
