@@ -12,6 +12,9 @@ import androidapp.service.PaymentService;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,7 +45,14 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setUser(user);
 
         List<PaymentProductEntity> paymentProducts = payment.getProducts().stream().map(productOrder -> {
+
+            // cập nhật số lượng bán ra của từng món ăn khi thanh toán thành công
             PaymentProductEntity paymentProduct = new PaymentProductEntity();
+            Optional<ProductEntity> productEntity = productRepository.findById(productOrder.getProduct().getId());
+            if (productEntity.isPresent()) {
+                ProductEntity product = productEntity.get();
+                updateProductPayment(product,productOrder.getQuantity());
+            }
 
             // Khi đặt hàng sẽ set Status là đang chuẩn bị
             payment.setStatus("PREPARING");
@@ -76,4 +86,20 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAllByIdIn(paymentIds);
     }
 
+    @Override
+    public void updateProductPayment(ProductEntity product, int quantity) {
+        product.setSoldCount(product.getSoldCount() + quantity);
+        productRepository.save(product);
+    }
+
+
+    public Page<PaymentEntity> findByUserId(int userId, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return paymentRepository.findByUserId(userId, pageable);
+    }
+
+    public Page<PaymentEntity> findPaymentsByIds(List<Integer> paymentIds, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return paymentRepository.findByIdIn(paymentIds, pageable);
+    }
 }
