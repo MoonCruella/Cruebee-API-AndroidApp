@@ -30,7 +30,7 @@ public class PaymentStatusScheduler {
             paymentRepository.save(payment);
         }
 
-        // Cập nhật đơn hàng từ SHIPPING → DELIVERED (sau 20 phút từ lúc tạo đơn)
+        // Cập nhật đơn hàng từ SHIPPING → DELIVERED (sau 15 phút từ lúc tạo đơn)
         List<PaymentEntity> shippingOrders = paymentRepository
                 .findByStatusAndOrderDateBefore("SHIPPING", now.minusMinutes(15));
         for (PaymentEntity payment : shippingOrders) {

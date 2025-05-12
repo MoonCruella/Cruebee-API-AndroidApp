@@ -15,4 +15,5 @@ public interface PaymentService {
     void updateProductPayment(ProductEntity product, int quantity);
     Page<PaymentEntity> findByUserId(int userId, int page, int pageSize);
     Page<PaymentEntity> findPaymentsByIds(List<Integer> paymentIds, int page, int pageSize);
+    String cancelOrder(int id);
 }

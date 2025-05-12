@@ -33,9 +33,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private PaymentProductRepository paymentProductRepository;
-
     @Override
     public String placeOrder(PaymentEntity payment) {
 
@@ -101,5 +98,19 @@ public class PaymentServiceImpl implements PaymentService {
     public Page<PaymentEntity> findPaymentsByIds(List<Integer> paymentIds, int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         return paymentRepository.findByIdIn(paymentIds, pageable);
+    }
+
+    @Override
+    public String cancelOrder(int id) {
+        Optional<PaymentEntity> payment = paymentRepository.findById(id);
+        if (payment.isPresent()) {
+            payment.get().setStatus("CANCELED");
+            payment.get().setOrderDate(LocalDateTime.now());
+            paymentRepository.save(payment.get());
+            return "Cancel successfully";
+        }
+        else {
+            return "Order not found";
+        }
     }
 }

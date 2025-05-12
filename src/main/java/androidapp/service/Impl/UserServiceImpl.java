@@ -68,27 +68,26 @@ public class UserServiceImpl implements UserService {
 		String otp = optUtil.generateOtp();
 		try {
 			emailUtil.sendOtpEmail(registerModel.getEmail(), otp);
+			UserEntity user = new UserEntity();
+			user.setUsername(registerModel.getUsername());
+			user.setEmail(registerModel.getEmail());
+			user.setPassword(encoder.encode(registerModel.getPassword()));
+			user.setOtp(otp);
+			user.setOptGeneratedTime(LocalDateTime.now());
+			user.setSdt(registerModel.getSdt());
+			user.setGender(registerModel.getGender());
+
+			// Kiểm tra nếu user đã đăng ký nhưng chưa active thì chỉ update thông tin cho user đó
+			if(userE != null && !userE.isActive()){
+				updateUser(user);
+			}
+			else{
+				userRepository.save(user);
+			}
+			return "User registration successful";
 		} catch (MessagingException e) {
 			throw new RuntimeException("Unable to send otp please try again");
 		}
-		UserEntity user = new UserEntity();
-		user.setUsername(registerModel.getUsername());
-		user.setEmail(registerModel.getEmail());
-		user.setPassword(encoder.encode(registerModel.getPassword()));
-		user.setOtp(otp);
-		user.setOptGeneratedTime(LocalDateTime.now());
-		user.setSdt(registerModel.getSdt());
-		user.setGender(registerModel.getGender());
-
-		// Kiểm tra nếu user đã đăng ký nhưng chưa active thì chỉ update thông tin cho user đó
-		if(userE != null && !userE.isActive()){
-			updateUser(user);
-		}
-		else{
-			userRepository.save(user);
-		}
-		return "User registration successful";
-
 	}
 
 	@Override
