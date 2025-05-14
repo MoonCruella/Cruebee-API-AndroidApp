@@ -1,16 +1,9 @@
 package androidapp.entity;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -19,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name="users")
 public class UserEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -27,71 +20,29 @@ public class UserEntity {
 	private String password;
 	private String email;
 	private String role;
+	private String sdt;
+	private String gender;
 	private String otp;
 	private boolean active;
 	private LocalDateTime optGeneratedTime;
 
-	public int getId() {
-		return id;
-	}
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@JsonIgnore
+	private List<PaymentEntity> userPayments;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
+	private List<CartItemsEntity> cartItems;
 
-	public String getUsername() {
-		return username;
-	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+	@OneToMany(mappedBy = "user",orphanRemoval = true)
+	@JsonIgnore
+	private List<TokenEntity> tokens;
 
-	public String getPassword() {
-		return password;
-	}
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
+	@JsonIgnore
+	private List<UserAddressEntity> addresses;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
-	public String getEmail() {
-		return email;
-	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public String getOtp() {
-		return otp;
-	}
-
-	public void setOtp(String otp) {
-		this.otp = otp;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public LocalDateTime getOptGeneratedTime() {
-		return optGeneratedTime;
-	}
-
-	public void setOptGeneratedTime(LocalDateTime optGeneratedTime) {
-		this.optGeneratedTime = optGeneratedTime;
-	}
 }
