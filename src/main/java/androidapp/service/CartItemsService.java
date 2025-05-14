@@ -6,8 +6,8 @@ import androidapp.model.CartItemsModel;
 import java.util.List;
 
 public interface CartItemsService {
-    public void addToCart(CartItemsModel cartItemsModel);
-    public List<CartItemsEntity> getUserCart(int userId);
+    void addToCart(CartItemsModel cartItemsModel);
+    List<CartItemsEntity> getUserCart(int userId);
     void deleteToCart(CartItemsModel cartItem);
     void clearCart(int userId);
 }

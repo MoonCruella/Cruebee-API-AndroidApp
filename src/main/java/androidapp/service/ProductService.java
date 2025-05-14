@@ -8,9 +8,6 @@ import java.util.List;
 public interface ProductService {
     public List<ProductEntity> findAll();
     public List<ProductEntity> findByCategoryId(int categoryId);
-    public List<ProductEntity> findProductsWithSorting(String field);
-    public Page<ProductEntity> findProductsWithPagination(int offset, int pagesize);
-    public Page<ProductEntity> findProductsWithPaginationAndSorting(String field,int offset, int pagesize);
     public Page<ProductEntity> findTopTenSold();
-    public Page<ProductEntity> findCreatedInAWeek(int offset);
+
 }

@@ -35,34 +35,9 @@ public class ProductController {
         return products;
     }
 
-    @GetMapping("/sort/{field}")
-    public APIResponse<List<ProductEntity>> getProductsWithSorting(@PathVariable String field){
-        List<ProductEntity> products = productService.findProductsWithSorting(field);
-        return new APIResponse<>(products.size(),products);
-
-    }
-
-    @GetMapping("/pagination/{offset}/{pagesize}")
-    public APIResponse<Page<ProductEntity>> getProductsWithPagination(@PathVariable int offset,@PathVariable int pagesize) {
-        Page<ProductEntity> products = productService.findProductsWithPagination(offset, pagesize);
-        return new APIResponse<>(products.getSize(),products);
-    }
-
-    @GetMapping("/paginationAndSort/{offset}/{pagesize}/{field}")
-    public APIResponse<Page<ProductEntity>> getProductsWithPaginationAndSorting(@PathVariable String field,@PathVariable int offset,@PathVariable int pagesize) {
-        Page<ProductEntity> products = productService.findProductsWithPaginationAndSorting(field,offset, pagesize);
-        return new APIResponse<>(products.getSize(),products);
-    }
-
     @GetMapping("/top-ten-sold")
     public APIResponse<Page<ProductEntity>> getProductsTopTenSold(){
         Page<ProductEntity> products = productService.findTopTenSold();
-        return new APIResponse<>(products.getSize(),products);
-    }
-
-    @GetMapping("/created-in-a-week/{offset}")
-    public APIResponse<Page<ProductEntity>> getProductsCreatedInAWeek(@PathVariable int offset){
-        Page<ProductEntity> products = productService.findCreatedInAWeek(offset);
         return new APIResponse<>(products.getSize(),products);
     }
 

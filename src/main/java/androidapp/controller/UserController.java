@@ -42,10 +42,6 @@ public class UserController {
             }),
             @ApiResponse(responseCode = "404", description = "Not See",content = @Content)
     })
-    @GetMapping("/hello")
-    public String index() {
-        return "Hello World";
-    }
 
     @PostMapping("/loginn")
     public ResponseEntity<?> login(@RequestBody LoginModel loginModel) {

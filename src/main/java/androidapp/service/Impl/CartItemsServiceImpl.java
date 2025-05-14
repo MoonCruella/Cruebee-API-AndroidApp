@@ -56,8 +56,6 @@ public class CartItemsServiceImpl  implements CartItemsService {
         cartRepository.save(cartItem);
     }
 
-
-
     // Lấy danh sách giỏ hàng của người dùng
     @Override
     public List<CartItemsEntity> getUserCart(int userId) {
@@ -69,6 +67,7 @@ public class CartItemsServiceImpl  implements CartItemsService {
         int userId = cartItemsModel.getUserId();
         int productId = cartItemsModel.getProductId();
         int quantity = cartItemsModel.getQuantity();
+
         // Kiểm tra sản phẩm có tồn tại trong giỏ hàng của user hay không
         CartItemsEntity cartItem = cartRepository.findByUserIdAndProductId(userId, productId);
         if (cartItem != null) {
