@@ -2,30 +2,30 @@
 
 ## 👨‍💻 **Nhóm 42**
 
-| Họ tên              | MSSV     |
-| ------------------- | -------- |
-| Lê Huỳnh Như Nguyệt | 22110385 |
-| Phạm Ngọc Hòa       | 22110330 |
+| Họ tên                              | MSSV         |
+| ----------------------------------- | ------------ |
+| Lê Huỳnh Như Nguyệt                 | 22110385     |
+| Phạm Ngọc Hòa                       | 22110330     |
 
 ---
 
 ## 📌 **Giới Thiệu Dự Án**
 
 **Mục đích dự án**
-Với sự phát triển vượt bậc của thời đại công nghệ số, người dùng ngày nay có xu hướng tiếp cận các dịch vụ một cách nhanh chóng và tiện lợi thông qua các thiết bị di động. Nhận thấy nhu cầu mua sắm trực tuyến, đặc biệt là trong lĩnh vực ẩm thực, ngày càng được quan tâm bởi nhiều đối tượng người dùng, nhóm sinh viên chúng em đã lựa chọn thực hiện đề tài ***Ứng dụng đặt thức ăn nhanh – Cruebee***.
-Ứng dụng này được xây dựng nhằm hỗ trợ người tiêu dùng trong việc đặt món ăn nhanh tại nhà, giúp tiết kiệm thời gian, chi phí, đồng thời mang lại sự tiện lợi và trải nghiệm tốt hơn. Bên cạnh đó, ứng dụng cũng góp phần hỗ trợ các cửa hàng, quán ăn mở rộng kênh phân phối, gia tăng nguồn thu nhập, và tiếp cận nhiều khách hàng hơn trong thời đại số.
+- Với sự phát triển vượt bậc của thời đại công nghệ số, người dùng ngày nay có xu hướng tiếp cận các dịch vụ một cách nhanh chóng và tiện lợi thông qua các thiết bị di động. Nhận thấy nhu cầu mua sắm trực tuyến, đặc biệt là trong lĩnh vực ẩm thực, ngày càng được quan tâm bởi nhiều đối tượng người dùng, nhóm sinh viên chúng em đã lựa chọn thực hiện đề tài ***Ứng dụng đặt thức ăn nhanh – Cruebee***.
+- Ứng dụng này được xây dựng nhằm hỗ trợ người tiêu dùng trong việc đặt món ăn nhanh tại nhà, giúp tiết kiệm thời gian, chi phí, đồng thời mang lại sự tiện lợi và trải nghiệm tốt hơn. Bên cạnh đó, ứng dụng cũng góp phần hỗ trợ các cửa hàng, quán ăn mở rộng kênh phân phối, gia tăng nguồn thu nhập, và tiếp cận nhiều khách hàng hơn trong thời đại số.
 
 ---
 **Công nghệ sử dụng**
-Để xây dựng và phát triển ứng dụng *Cruebee – Ứng dụng đặt thức ăn nhanh* , nhóm sử dụng các công nghệ sau:
-Android(Java):
-Nền tảng chính để xây dựng giao diện người dùng và xử lý các thao tác trên thiết bị di động.
-Volley:
-Thư viện của Android hỗ trợ thực hiện các yêu cầu mạng (HTTP), dùng để giao tiếp với hệ thống backend thông qua API.
-SpringBoot(Java):
-Framework phía backend dùng để xây dựng các RESTful API, xử lý logic nghiệp vụ và truy xuất cơ sở dữ liệu.
-MySQL:
-Hệ quản trị cơ sở dữ liệu dùng để lưu trữ thông tin người dùng, món ăn, đơn hàng và các dữ liệu liên quan đến hệ thống.
+Để xây dựng và phát triển ứng dụng ***Cruebee – Ứng dụng đặt thức ăn nhanh*** , nhóm sử dụng các công nghệ sau:
+- **Android(Java)**:
+  Nền tảng chính để xây dựng giao diện người dùng và xử lý các thao tác trên thiết bị di động.
+- **Volley**:
+  Thư viện của Android hỗ trợ thực hiện các yêu cầu mạng (HTTP), dùng để giao tiếp với hệ thống backend thông qua API.
+- **SpringBoot(Java)**:
+  Framework phía backend dùng để xây dựng các RESTful API, xử lý logic nghiệp vụ và truy xuất cơ sở dữ liệu.
+- **MySQL**:
+  Hệ quản trị cơ sở dữ liệu dùng để lưu trữ thông tin người dùng, món ăn, đơn hàng và các dữ liệu liên quan đến hệ thống.
 
 ---
 
@@ -33,7 +33,7 @@ Hệ quản trị cơ sở dữ liệu dùng để lưu trữ thông tin ngườ
 
 **Hệ thống gồm 2 vai trò chính:**
 
-- 👤 **USER (Người dùng):**
+- 👤 **USER (Người dùng)**
 
   - Đăng nhập, đăng ký, quên mật khẩu. 
   - Xem danh sách món ăn bán chạy, danh sách món đề xuất, danh sách sản phẩm theo phân loại. 
@@ -89,5 +89,5 @@ Cách 2: Download source code của toàn bộ dự án được sinh viên gử
     username: <Tên người dùng MySQL>
     password: <Mật khẩu MySQL>
     ```
-  - **RUN** bấm run cả 2 bên ứng dụng để tiến hành chạy ứng dụng Cruebee. 
+- **RUN** bấm run cả 2 bên ứng dụng để tiến hành chạy ứng dụng Cruebee. 
 
